@@ -1,6 +1,10 @@
 /**
  * 账号控制器
  */
+const  models = require('../models/index')
+
+console.log(models)
+
 exports.login = (req, res) => {
   res.send('login')
 }
