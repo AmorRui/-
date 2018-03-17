@@ -1,6 +1,7 @@
 /**
  * 账号控制器
  */
+const bcryptjs = require('bcryptjs')
 const { User } = require('../models')
 
 exports.login = (req, res) => {
@@ -37,7 +38,10 @@ User.findOne( { where: { username } } )
     const newUser = new User()
     newUser.username = username 
     newUser.user_email = email
-
+    // 密码加密
+    const salt = bcrypt.genSaltSync(10)
+    newUser.password = bcrypt.hashSync(password, salt) 
+    
     newUser.create_time = Date.now() / 1000
     newUser.update_time = Date.now() / 1000
     return newUser.save()
