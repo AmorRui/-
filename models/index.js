@@ -23,3 +23,4 @@ glob.sync('*.js', { cwd: __dirname })
     const model = sequelize.import(path.join(__dirname, item))
     exports[model.name] = model
   })
+  
