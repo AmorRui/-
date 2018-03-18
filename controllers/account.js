@@ -6,14 +6,11 @@ const bcrypt = require('bcryptjs')
 const { User } = require('../models')
 const utils = require('../utils')
 
-exports.login = (req, res) => {
-  res.send('login')
-}
-
+// GET register
 exports.register = (req, res) => {
   res.render('register')
 }
-
+// POST registerPost
 exports.registerPost = (req, res) => {
   const { username, email, password, confirm, agree} = req.body
   // 表单不能为空
@@ -64,6 +61,38 @@ exports.registerPost = (req, res) => {
     .catch(e => {
       res.render('register', { msg: e.message })
     })
+}
+
+// GET login
+exports.login = (req, res) => {
+  res.render('login')
+}
+
+// POST loginPost
+exports.loginPost = (req, res, nex) => {
+  // 提交的东西要先进行解构 
+  const { username, password, remember} = req.body
+  // 界面级别校验   外界来的数据合理不合理
+  if(!(username && password)) {
+    return res.render('login',{ msg: '请完整填写登陆信息' })
+  // 业务级别的校验  查询数据库内容
+    User.findOne( { where: {username} } )
+      .then( user => {
+        if( !user ) throw new Error('用户名不存在')
+        // 判断密码是否匹配
+        // 密码都是加密的,不能直接全等,需要进行再次加密
+        return bcrypt.compare( password, user.password )
+      })
+    .then( match => {
+      if( !match ) throw new Error('密码错误')
+          // 用户存在  且密码正确
+        res.send('登陆成功')
+    })
+
+    .catch(e => {
+      return res.render('login',{ msg: e.message })
+    })
+  }
 }
 
 exports.active = (req,res) => {
