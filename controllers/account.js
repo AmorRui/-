@@ -1,15 +1,16 @@
 /**
  * 账号控制器
  */
+const uuid = require('uuid')
 const bcrypt = require('bcryptjs')
 const { User } = require('../models')
 const utils = require('../utils')
 
 exports.login = (req, res) => {
-  utils.sendEmail('teng0009@126.com','123')
-    .then(info => {
-      res.send(info.messageId)
-    }) 
+  // utils.sendEmail('teng0009@126.com','123')
+  //   .then(info => {
+  //     res.send(info.messageId)
+  //   }) 
   
 }
 
@@ -42,7 +43,9 @@ exports.registerPost = (req, res) => {
       // 持久化
       const newUser = new User()
       newUser.username = username
+      // code截取
       newUser.user_email = email
+      newUser.user_email_code = uuid().substr(0,10)
       // 密码加密
       const salt = bcrypt.genSaltSync(10)
       newUser.password = bcrypt.hashSync(password, salt)
@@ -56,8 +59,11 @@ exports.registerPost = (req, res) => {
       // console.log(user)
       if (!user.user_id) throw new Error('注册失败')
       // 发送激活邮件
-      
-      
+      const activeLink = `http:127.0.0.1:3000/active?code=${user.user_email_code}`  
+      utils.sendEmail('email', '请激活您的邮箱(模拟京东)', `<p><a href= :"${activeLink}">${activeLink}</p>`)
+        .then(() => {
+          res.redirect('/login')
+        })
       
       // 跳转至登陆页面
       res.redirect('/login')
@@ -65,4 +71,9 @@ exports.registerPost = (req, res) => {
     .catch(e => {
       res.render('register', { msg: e.message })
     })
+}
+
+exports.active = (req,res) => {
+  const { code } = req.query
+  res.send(code)
 }

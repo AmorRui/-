@@ -8,7 +8,7 @@ const accountController = require('./controllers/account')
 router.get('/register', accountController.register)
 router.post('/register', accountController.registerPost)
 router.get('/login', accountController.login)
-
+router.get('/active', accountController.active)
 router.get('/', home)
 
 module.exports = router
