@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport(config.mail)
  */
 exports.sendEmail = (to, subject, content) =>{
   const message = {
-    from: config.mail.auth.user,
+    from: `"${config.mail.name}" <${config.mail.auth.user}>`,
     to: to,
     subject: subject,
     html: content
