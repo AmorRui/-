@@ -89,8 +89,33 @@ exports.loginPost = (req, res) => {
     })
 }
 
-
-exports.active = (req,res) => {
+// get active
+exports.active = (req, res, next) => {
   const { code } = req.query
-  res.send(code)
+  // TODO:实现登陆   激活邮箱
+  User.findOne ({ where: { user_email_code: code } })
+    .then( user => {
+      // 已经取到当前验证码[匹配的用户,当前登陆用户信息在session中
+      // 判断是否是同一个用户  用id 
+      if ( user.user_id !== req.session.currentUser.user_id) {
+        //404 
+        const err = new Error('Not Found')
+        res.status = 404 
+        return next(err)
+      }
+      
+      // 邮箱就是当前登陆用户的
+      user.is_active = '是'
+      
+      // 邮件有时效性
+      // 已经激活成功了, code 失效
+      user.user_email_code = ''
+
+      // 通过再次保存用户信息 更新
+      return user.save()
+    })
+    .then ( user => {
+      // res.send('ok')
+      res.redirect( '/memember' )
+    })
 }
