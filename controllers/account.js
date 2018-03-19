@@ -6,14 +6,12 @@ const bcrypt = require('bcryptjs')
 const { User } = require('../models')
 const utils = require('../utils')
 
-exports.login = (req, res) => {
-  res.send('login')
-}
-
+// grt register
 exports.register = (req, res) => {
   res.render('register')
 }
 
+// post register
 exports.registerPost = (req, res) => {
   const { username, email, password, confirm, agree} = req.body
   // 表单不能为空
@@ -65,6 +63,32 @@ exports.registerPost = (req, res) => {
       res.render('register', { msg: e.message })
     })
 }
+
+// get login
+exports.login = (req, res) => {
+  res.render('login')
+}
+
+// post login
+exports.loginPost = (req, res) => {
+  const { username, password, remember } = req.body
+  if(! (username && password )) {
+    return res.render('login',{ msg: '请填写完整表单' })
+  }
+  User.findOne( { where: {username} } )
+    .then( user => {
+      if(!user) throw new Error ('用户名不正确')
+      return bcrypt.compare(password, user.password)
+    })
+    .then(match => {
+      if(!match) throw new Error('密码不正确')
+      res.send('登陆成功')
+    })
+    .catch( e=>{
+      return e.render('login',{ msg: e.message })
+    })
+}
+
 
 exports.active = (req,res) => {
   const { code } = req.query
