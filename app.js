@@ -1,6 +1,7 @@
 const path = require('path')
 
 const express = require('express')
+const session = require('express-session')
 const favicon = require('serve-favicon')
 const logger = require('morgan')
 const cookieParser = require('cookie-parser')
@@ -24,9 +25,13 @@ app.set('view engine', 'hbs')
 app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use(cookieParser())
+app.use(cookieParser('sessiontest'))
 app.use(express.static(path.join(__dirname, 'public')))
-
+app.use(session({
+  secret: 'sessiontest',//与cookieParser中的一致
+  resave: true,
+  saveUninitialized:true
+}))
 app.use(routes)
 
 // catch 404 and forward to error handler

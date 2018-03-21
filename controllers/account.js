@@ -26,10 +26,12 @@ exports.registerPost = (req, res) => {
   if (!agree) {
     throw new Error('请同意协议')
   }
+  let currentUser
   // 判断用户时候存在
   User.findOne({ where: { username } })
     .then(user => {
       if (user) throw new Error('用户名已经存在')
+     
       return User.findOne({ where: { user_email: email } })
     })
     .then(user => {
@@ -75,47 +77,55 @@ exports.loginPost = (req, res) => {
   if(! (username && password )) {
     return res.render('login',{ msg: '请填写完整表单' })
   }
+  // let currentUser
   User.findOne( { where: {username} } )
     .then( user => {
       if(!user) throw new Error ('用户名不正确')
+      // currentUser = user
       return bcrypt.compare(password, user.password)
     })
     .then(match => {
       if(!match) throw new Error('密码不正确')
-      res.send('登陆成功')
+      // req.session.currentUser = currentUser 
+      res.redirect('/member')
     })
     .catch( e=>{
-      return e.render('login',{ msg: e.message })
+      return res.render('login', { msg: e.message })
     })
 }
-
+exports.active = (req, res) => {
+  const {
+    code
+  } = req.query
+  res.redirect( '/member' )
+}
 // get active
-exports.active = (req, res, next) => {
-  const { code } = req.query
-  // TODO:实现登陆   激活邮箱
-  User.findOne ({ where: { user_email_code: code } })
-    .then( user => {
-      // 已经取到当前验证码[匹配的用户,当前登陆用户信息在session中
-      // 判断是否是同一个用户  用id 
-      if ( user.user_id !== req.session.currentUser.user_id) {
-        //404 
-        const err = new Error('Not Found')
-        res.status = 404 
-        return next(err)
-      }
+// exports.active = (req, res, next) => {
+//   const { code } = req.query
+//   // TODO:实现登陆   激活邮箱
+//   User.findOne ({ where: { user_email_code: code } })
+//     .then( user => {
+//       // 已经取到当前验证码[匹配的用户,当前登陆用户信息在session中
+//       // 判断是否是同一个用户  用id 
+//       if ( user.user_id !== req.session.currentUser.user_id) {
+//         //404 
+//         const err = new Error('Not Found')
+//         res.status = 404 
+//         return next(err)
+//       }
       
-      // 邮箱就是当前登陆用户的
-      user.is_active = '是'
+//       // 邮箱就是当前登陆用户的
+//       user.is_active = '是'
       
-      // 邮件有时效性
-      // 已经激活成功了, code 失效
-      user.user_email_code = ''
+//       // 邮件有时效性
+//       // 已经激活成功了, code 失效
+//       user.user_email_code = ''
 
-      // 通过再次保存用户信息 更新
-      return user.save()
-    })
-    .then ( user => {
-      // res.send('ok')
-      res.redirect( '/memember' )
-    })
-}
+//       // 通过再次保存用户信息 更新
+//       return user.save()
+//     })
+//     .then ( user => {
+//       // res.send('ok')
+//       res.redirect( '/memember' )
+//     })
+// }
