@@ -74,11 +74,17 @@ exports.login = (req, res) => {
 // post login
 exports.loginPost = (req, res) => {
   const { username, password, remember } = req.body
+
+  res.locals.username = username 
+  res.locals.password = password 
+  
   if(! (username && password )) {
     return res.render('login',{ msg: '请填写完整表单' })
   }
+  const whereProp = username.includes('@')?'user_email': 'username'
+  
   // let currentUser
-  User.findOne( { where: {username} } )
+  User.findOne( { where: {[whereProp]: username} })
     .then( user => {
       if(!user) throw new Error ('用户名不正确')
       // currentUser = user
