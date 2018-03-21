@@ -32,7 +32,11 @@
                 </div>
                 <div class="input-prepend">
                   <span class="add-on loginpwd"></span>
-                  <input type="password" class="span2 input-xfat" placeholder="请输入密码" name="password" value="{{password}}">
+                  <input type="password" class="span2 input-xfat" placeholder="请输入密码" name="password" >
+                </div> <div class="input-prepend">
+                  <span class="add-on loginpwd"></span>
+                  <input type="text" class="span2 input-xfat" placeholder="请输入验证码" name="captcha" >
+                  <img src="/captcha" alt="" id="captcha">
                 </div>
                 <div class="setting">
                   <label class="checkbox inline"><input name="remember" type="checkbox"> 自动登录</label>
@@ -73,6 +77,14 @@
   <script src="/assets/js/jquery.js"></script>
   <script src="/assets/js/sui.tab.js"></script>
   <script src="/assets/js/sui.transition.js"></script>
+  <script>
+    $(function($){
+      $('#captcha').on('click',function(){
+        // 怎么样图片刷新
+        $(this).attr('src',$(this).attr('src')+'?'+Date.now())
+      })
+    })
+  </script>
 </body>
 
 </html>

@@ -73,14 +73,21 @@ exports.login = (req, res) => {
 
 // post login
 exports.loginPost = (req, res) => {
-  const { username, password, remember } = req.body
+  const { username, password, remember, captcha } = req.body
 
   res.locals.username = username 
-  res.locals.password = password 
   
-  if(! (username && password )) {
+  if(! (username && password && captcha)) {
     return res.render('login',{ msg: '请填写完整表单' })
   }
+  // 验证码校验
+ 
+  // if(captcha.toLowerCase() !== req.session.captcha.toLowerCase()){
+  //   return res.render('login',{msg: '验证码不正确'})
+  // }
+  // // 删除之前的验证码
+  // delete req.session.captcha
+
   const whereProp = username.includes('@')?'user_email': 'username'
   
   // let currentUser
