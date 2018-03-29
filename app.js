@@ -1,6 +1,7 @@
 const path = require('path')
 
 const express = require('express')
+const session = require('express-session')
 const favicon = require('serve-favicon')
 const logger = require('morgan')
 const cookieParser = require('cookie-parser')
@@ -26,6 +27,8 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
+
+app.use(session({ secret: 'this is a secret', resave: false, saveUninitialized: false }))
 
 app.use(routes)
 
